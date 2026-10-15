@@ -1,6 +1,7 @@
 import csv
 from application import Application, Status
 from datetime import date
+from pathlib import Path
 
 def save_applications(applications):
     with open('data.csv', 'w', newline='', encoding='utf-8-sig') as csvfile:
@@ -19,5 +20,22 @@ def application_to_dictionary(application: Application):
             'ID': application.id
     }
 
-def load_applications(): 
-    #TODO
+def load_applications():
+    path = Path('data.csv')
+    if not path.exists():
+        return []
+
+    applications = []
+    with open(path, 'r', newline='', encoding='utf-8-sig') as csvfile:
+        reader = csv.DictReader(csvfile, delimiter=';')
+        for row in reader:
+            applications.append(Application(
+                name=row['Stellenname'],
+                company=row['Firma'],
+                applied_at=row['Beworben am'],
+                status=row['Status'],
+                link=row['Link'] or None,
+                notes=row['Notizen'] or None,
+                id=row['ID'],
+            ))
+    return applications
